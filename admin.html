@@ -3,15 +3,67 @@
 <head>
   <meta charset="UTF-8">
   <title>Admin - View Emails</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f9f9f9;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    th, td {
+      padding: 12px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+    th {
+      background: #007bff;
+      color: white;
+    }
+    tr:nth-child(even) {
+      background: #f2f2f2;
+    }
+    button {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #c82333;
+    }
+  </style>
 </head>
 <body>
   <h2>All Sent Emails</h2>
-  <ul id="emailsList"></ul>
+  <table>
+    <thead>
+      <tr>
+        <th>From Name</th>
+        <th>Email</th>
+        <th>Message</th>
+        <th>Date</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="emailsList"></tbody>
+  </table>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-    import { getFirestore, collection, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, orderBy, query, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
+    // ✅ Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyDz1suJpOPHC6N7cEZS0pBqVY-z7U4FEwU",
       authDomain: "upload-34aa5.firebaseapp.com",
@@ -23,22 +75,47 @@
       measurementId: "G-CGS8GJZQL3"
     };
 
+    // ✅ Init Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+    // ✅ Load Emails
     async function loadEmails() {
       const q = query(collection(db, "emails"), orderBy("timestamp", "desc"));
       const snapshot = await getDocs(q);
       const list = document.getElementById("emailsList");
       list.innerHTML = "";
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        const li = document.createElement("li");
-        li.innerHTML = `<strong>${data.from_name}</strong> (${data.from_email})<br>Message: ${data.message}`;
-        list.appendChild(li);
+
+      snapshot.forEach(docSnap => {
+        const data = docSnap.data();
+        const tr = document.createElement("tr");
+
+        const date = data.timestamp?.toDate
+          ? data.timestamp.toDate().toLocaleString()
+          : "No date";
+
+        tr.innerHTML = `
+          <td>${data.from_name || "N/A"}</td>
+          <td>${data.from_email || "N/A"}</td>
+          <td>${data.message || "No message"}</td>
+          <td>${date}</td>
+          <td><button onclick="deleteEmail('${docSnap.id}')">Delete</button></td>
+        `;
+
+        list.appendChild(tr);
       });
     }
 
+    // ✅ Delete Email Function
+    window.deleteEmail = async function(id) {
+      if (confirm("Are you sure you want to delete this email?")) {
+        await deleteDoc(doc(db, "emails", id));
+        alert("Email deleted successfully!");
+        loadEmails(); // reload table
+      }
+    };
+
+    // Load on start
     loadEmails();
   </script>
 </body>
