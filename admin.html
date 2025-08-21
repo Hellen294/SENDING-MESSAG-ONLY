@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin - View Emails</title>
+</head>
+<body>
+  <h2>All Sent Emails</h2>
+  <ul id="emailsList"></ul>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+    import { getFirestore, collection, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDz1suJpOPHC6N7cEZS0pBqVY-z7U4FEwU",
+      authDomain: "upload-34aa5.firebaseapp.com",
+      databaseURL: "https://upload-34aa5-default-rtdb.firebaseio.com",
+      projectId: "upload-34aa5",
+      storageBucket: "upload-34aa5.firebasestorage.app",
+      messagingSenderId: "680131375536",
+      appId: "1:680131375536:web:081ef6db97ffe9fe816675",
+      measurementId: "G-CGS8GJZQL3"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    async function loadEmails() {
+      const q = query(collection(db, "emails"), orderBy("timestamp", "desc"));
+      const snapshot = await getDocs(q);
+      const list = document.getElementById("emailsList");
+      list.innerHTML = "";
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const li = document.createElement("li");
+        li.innerHTML = `<strong>${data.from_name}</strong> (${data.from_email})<br>Message: ${data.message}`;
+        list.appendChild(li);
+      });
+    }
+
+    loadEmails();
+  </script>
+</body>
+</html>
