@@ -5,93 +5,136 @@
   <title>Email Sender</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- ✅ EmailJS SDK (v3 stable) -->
+  <!-- ✅ EmailJS SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
   <script>
     (function() {
-      // ✅ Your EmailJS Public Key
-      emailjs.init("xN-9tGFGmYpLAjT9G");
+      emailjs.init("xN-9tGFGmYpLAjT9G"); // ✅ Your EmailJS Public Key
     })();
   </script>
 
   <style>
+    :root {
+      --primary: #007BFF;
+      --primary-dark: #0056b3;
+      --bg: #f4f7fb;
+      --card-bg: #fff;
+      --text-dark: #333;
+      --radius: 14px;
+    }
     body {
-      font-family: "Segoe UI", sans-serif;
-      background: #f4f6f8;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: var(--bg);
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
       margin: 0;
+      padding: 1rem;
     }
     .container {
-      background: #fff;
+      background: var(--card-bg);
       padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-      max-width: 400px;
+      border-radius: var(--radius);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      max-width: 420px;
       width: 100%;
+      animation: fadeIn 0.6s ease;
     }
     h2 {
       text-align: center;
+      margin-bottom: 1rem;
+      color: var(--text-dark);
+    }
+    p.sub {
+      text-align: center;
+      margin-top: -0.5rem;
       margin-bottom: 1.5rem;
-      color: #333;
+      color: #666;
+      font-size: 0.9rem;
     }
     label {
       font-weight: 600;
       display: block;
-      margin-bottom: 0.4rem;
+      margin-bottom: 0.3rem;
+      font-size: 0.9rem;
+      color: #444;
     }
     input, textarea {
       width: 100%;
-      padding: 0.75rem;
+      padding: 0.8rem;
       margin-bottom: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 14px;
+      border: 1px solid #ddd;
+      border-radius: var(--radius);
+      font-size: 15px;
+      transition: border 0.2s;
+    }
+    input:focus, textarea:focus {
+      border-color: var(--primary);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(0,123,255,0.2);
     }
     button {
       width: 100%;
       padding: 0.9rem;
       border: none;
-      border-radius: 8px;
+      border-radius: var(--radius);
       font-size: 16px;
       font-weight: bold;
       cursor: pointer;
-      background: #007BFF;
+      background: var(--primary);
       color: white;
-      transition: background 0.3s;
+      transition: background 0.3s, transform 0.1s;
     }
     button:hover {
-      background: #0056b3;
+      background: var(--primary-dark);
+    }
+    button:active {
+      transform: scale(0.98);
     }
     #status {
       text-align: center;
       margin-top: 1rem;
       font-weight: 600;
+      padding: 0.6rem;
+      border-radius: var(--radius);
+      display: none;
     }
-    #status.success { color: green; }
-    #status.error { color: red; }
+    #status.success {
+      background: #d4edda;
+      color: #155724;
+      display: block;
+    }
+    #status.error {
+      background: #f8d7da;
+      color: #721c24;
+      display: block;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>SMTP</h2>
-    <h2>Send Email</h2>
+    <h2>📧 Send Email</h2>
+    <p class="sub">Quick SMTP</p>
+
     <form id="emailForm">
-      <label for="from_name">Name:</label>
-      <input type="text" name="from_name" required>
+      <label for="from_name">Your Name</label>
+      <input type="text" name="from_name" placeholder="Enter your name" required>
 
-      <label for="from_email">Email:</label>
-      <input type="email" name="from_email" required>
+      <label for="from_email">Your Email</label>
+      <input type="email" name="from_email" placeholder="Enter your email" required>
 
-      <label for="message">Message:</label>
-      <textarea name="message" rows="5" required></textarea>
+      <label for="message">Message</label>
+      <textarea name="message" rows="5" placeholder="Write your message..." required></textarea>
 
       <button type="submit">Send Email</button>
     </form>
 
-    <p id="status"></p>
+    <div id="status"></div>
   </div>
 
   <!-- ✅ Firebase + Firestore -->
